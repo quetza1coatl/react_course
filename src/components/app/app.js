@@ -7,27 +7,44 @@ import TodoList from "../todo-list";
 import './app.css';
 
 
-const App = () => {
+export default class App extends React.Component {
+    state = {
+        todoData:[
+            { label: 'Drink Coffee', important: false, id: 1 },
+            { label: 'Make Awesome App', important: true, id: 2 },
+            { label: 'Have a lunch', important: false, id: 3 }
+        ]
+    };
 
-    const todoData = [
-        { label: 'Drink Coffee', important: false, id: 1 },
-        { label: 'Make Awesome App', important: true, id: 2 },
-        { label: 'Have a lunch', important: false, id: 3 }
-    ];
+    deleteItem = (id) => {
+        this.setState (({ todoData }) => {
+            //find index of element
+            const idx = todoData.findIndex((el) => el.id === id);
+            // we must not change the state, so we have to create new array, but without element that have to be deleted
+            const newArray = [
+                ...todoData.slice(0, idx),
+                ...todoData.slice(idx + 1)
+            ];
+            return {
+                todoData: newArray
+            };
+        });
+    };
 
-    return (
-        <div className="todo-app">
-            <AppHeader toDo={1} done={3} />
-            <div className="top-panel d-flex">
-                <SearchPanel />
-                <ItemStatusFilter />
+    render(){
+        return (
+            <div className="todo-app">
+                <AppHeader toDo={1} done={3} />
+                <div className="top-panel d-flex">
+                    <SearchPanel />
+                    <ItemStatusFilter />
+                </div>
+
+                <TodoList
+                    todos={this.state.todoData}
+                    onDeleted = {this.deleteItem}/>
             </div>
+        );
+    }
+}
 
-            <TodoList
-                todos={todoData}
-                onDeleted={ (id) => console.log('Deleted: ' + id)}/>
-        </div>
-    );
-};
-
-export default App;
